@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tasks List</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Completed</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>
+                <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+            </td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.due_date }}</td>
+            <td>{{ task.completed }}</td>
+            <td>
+                {% if project.status == 'planned' %}
+                    <span style="color: gray;">Planned</span>
+                {% elif project.status == 'in_progress' %}
+                    <span style="color: blue;">In Progress</span>
+                {% elif project.status == 'completed' %}
+                    <span style="color: green;">Completed</span>
+                {% else %}
+                    {{ project.status }}
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No projects found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

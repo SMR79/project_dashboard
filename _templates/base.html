@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>User</title>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+    </head>
+    
+    <body>
+        <nav>        
+            {% if user.is_authenticated %}            
+                <div id="nav-A">
+                    <a href="{% url 'project_list' %}">Project</a>
+                    <a href="{% url 'task_list' %}">Task</a>
+                    <a href="{% url 'user_list' %}">User</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+            {% else %}            
+                <div id="nav-B">
+                    <a href="{% url 'register' %}">Register</a> 
+                    <a href="{% url 'login' %}">Login</a> 
+                </div>
+            {% endif %}
+        </nav>
+
+        <main>
+            {% block content %}
+            {% if user.is_authenticated %}
+                <span>Welcome, {{ user.username }}!</span> |
+            {% endif %}
+            {% endblock %}
+        </main>
+
+    </body>
+</html>
