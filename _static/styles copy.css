@@ -18,6 +18,7 @@ body {
     background: #fafafa;       
 }
 
+
 nav {
     flex: content;
     height: 100px;     
@@ -28,6 +29,7 @@ nav {
     align-items: center; 
     
 }
+
 nav a {
     color: white;
     text-decoration: none;
@@ -79,20 +81,27 @@ nav a {
 .dropdown:hover .dropdown-menu {
     display: block;
 }
-
+    
 main {
-    padding: 0;
-    max-width: 1000px;
     margin: 0 auto;
     width: 60%;
-    margin-top: 2rem;
 }
 
-@media (max-width: 600px) {
-    body {
-        font-size: 14px;
-    }
+.table-responsive {
+    overflow-x: visible;
+}
 
+.table-responsive table {
+    width: 100%;
+}
+
+/* Media */
+
+@media (max-width: 768px) {
+    main {
+        padding: 0 10px;        
+        width: 95%;
+    }
 
     
 }

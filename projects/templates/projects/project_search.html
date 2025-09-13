@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-sm">
+    {% comment %} Display the filter title based on the 'id' parameter {% endcomment %}
+
+    {% if id == "active" %}
+        <h2>Active Projects</h2>
+    {% elif id == "completed" %}
+        <h2>Completed Projects</h2>
+    {% elif id == "planned" %}
+        <h2>Planned Projects</h2>
+    {% elif id == "my_projects" %}
+        <h2>My Projects</h2>
+    {% else %}
+        <h2>All Projects</h2>
+    {% endif %}
+
+    <div class="table-responsive mx-0">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Project name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>
+                        <a href="{% url 'project_detail' project.id %}">{{ project.name }}</a>
+                    </td>
+                    <td>{{ project.description }}</td>
+                    <td>{{ project.get_status_display }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">No projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

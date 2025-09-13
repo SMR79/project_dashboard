@@ -1,21 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Project Detail: {{ project.name }}</h1>
+<h1>Project: <br>{{ project.name }}</h1>
 
 <p><strong>Description:</strong> {{ project.description }}</p>
-<p><strong>Start Date:</strong> {{ project.start_date }}</p>
-<p><strong>End Date:</strong> {{ project.end_date|default:"-" }}</p>
-<p><strong>Status:</strong>
-    {% if project.status == 'planned' %}
-        <span style="color: gray;">Planned</span>
-    {% elif project.status == 'in_progress' %}
-        <span style="color: blue;">In Progress</span>
-    {% elif project.status == 'completed' %}
-        <span style="color: green;">Completed</span>
-    {% else %}
-        {{ project.status }}
-    {% endif %}
-</p>
 
-<a href="{% url 'project_list' %}">Back to Project List</a>
+
+
+<table class="table table-bordered table-striped table-hover w-100 table-sm">
+    <thead class="table-light">
+        <tr>            
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>        
+        <tr>            
+            <td>{{ project.start_date }}</td>
+            <td>{{ project.end_date|default:"-" }}</td>
+            <td>
+                {% if project.status == 'planned' %}
+                    <span style="color: gray;">Planned</span>
+                {% elif project.status == 'in_progress' %}
+                    <span style="color: blue;">In Progress</span>
+                {% elif project.status == 'completed' %}
+                    <span style="color: green;">Completed</span>
+                {% else %}
+                    {{ project.status }}
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<a href="{% url 'project_search' %}">Back to Project List</a>
 {% endblock %}
