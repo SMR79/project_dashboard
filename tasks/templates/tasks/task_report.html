@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tasks Report</h1>
+
+<div>
+    <table class="table table-bordered table-striped table-hover w-100 table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Status</th>
+                <th>Amount</th>                
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Pending</td><td>{{ stats.pending }}</td></tr>
+            <tr><td>In Progress</td><td>{{ stats.in_progress }}</td></tr>
+            <tr><td>On Hold</td><td>{{ stats.on_hold }}</td></tr>
+            <tr><td>In Review</td><td>{{ stats.review }}</td></tr>
+            <tr><td>Completed</td><td>{{ stats.completed }}</td></tr>
+            <tr><td>Cancelled</td><td>{{ stats.cancelled }}</td></tr>
+            <tr class="table-danger"><td>Overdue</td><td>{{ stats.overdue }}</td></tr>
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

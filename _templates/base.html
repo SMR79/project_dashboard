@@ -18,7 +18,9 @@
                             <a href="{% url 'project_search' id='all' %}">Projects ▾</a>
                             <ul class="dropdown-menu">
                                 <li><a href="{% url 'project_search' id='all' %}">All Projects</a></li>
-                                <li><a href="{% url 'project_create' %}">New Project</a></li>
+                                {% if user.is_superuser %}
+                                    <li><a href="{% url 'project_create' %}">New Project</a></li>
+                                {% endif %}
                                 <li><a href="{% url 'project_search' id='active' %}">Active Projects</a></li>
                                 <li><a href="{% url 'project_search' id='completed' %}">Completed Projects</a></li>
                                 <li><a href="{% url 'project_search' id='planned' %}">Planned Projects</a></li>
@@ -32,6 +34,7 @@
                             <ul class="dropdown-menu">
                                 <li><a href="{% url 'task_list' %}">All Tasks</a></li>
                                 <li><a href="{% url 'task_create' %}">New Task</a></li>
+                                <li><a href="{% url 'task_report' %}">Task Reports</a></li>
                             </ul>
                         </li>
 

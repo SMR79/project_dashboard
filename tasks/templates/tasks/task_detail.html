@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Task: <br>{{ task.title }}</h1>
+
+<p><strong>Description:</strong> {{ task.description }}</p>
+
+
+
+<table class="table table-bordered table-striped table-hover w-100 table-sm">
+    <thead class="table-dark">
+        <tr>       
+            <th>Project</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Supervisor Person</th>
+            <th>Assigned Person</th>
+            <th>Created At</th>
+            <th>Due Date</th>
+            <th>Attachments</th>
+            <th>Status</th>
+            <th>Priority</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>       
+            <td>{{ task.project }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.supervisor_person }}</td>
+            <td>{{ task.assigned_person }}</td>
+            <td>{{ task.created_at }}</td>
+            <td>{{ task.due_date }}</td>
+            <td>
+                {% if task.attachment %}
+                    <a href="{{ task.attachment.url }}">Download</a>
+                {% else %}
+                    No attachment
+                {% endif %}
+            </td>
+            <td>{{ task.status }}</td>
+            <td>{{ task.priority }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<a href="{% url 'project_search' %}">Back to Project List</a>
+{% endblock %}

@@ -7,10 +7,12 @@
 
 
 <table class="table table-bordered table-striped table-hover w-100 table-sm">
-    <thead class="table-light">
+    <thead class="table-dark">
         <tr>            
             <th>Start Date</th>
-            <th>End Date</th>
+            <th>End Date</th>            
+            <th>Created by</th>
+            <th>Number of tasks</th>            
             <th>Status</th>
         </tr>
     </thead>
@@ -18,6 +20,8 @@
         <tr>            
             <td>{{ project.start_date }}</td>
             <td>{{ project.end_date|default:"-" }}</td>
+            <td>{{ project.assigned_to }}</td>
+            <td>{{ project.tasks.count }}</td>
             <td>
                 {% if project.status == 'planned' %}
                     <span style="color: gray;">Planned</span>
