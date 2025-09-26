@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserForm
 from .models import CustomUser
+from django.contrib.auth.decorators import login_required
+from .forms import CrispyAuthenticationForm
 
 # create user list view
 def get_user_list(request):
@@ -22,16 +24,16 @@ def register(request):
 
 def login_user(request):
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = CrispyAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('welocome')  # po přihlášení přesměrujeme na projekty
+                return redirect('welocome')
     else:
-        form = AuthenticationForm()
+        form = CrispyAuthenticationForm()
     return render(request, "users/login.html", {"form": form})
     
 

@@ -1,15 +1,61 @@
 from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row, Column, Submit
+from .models import CustomUser
+from django.contrib.auth.forms import AuthenticationForm
+
+
+
+from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row, Column, Submit
 from .models import CustomUser
 
-
-
 class CustomUserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Fill your password..', 'autocomplete': 'new-password'}),
+        label="Password"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm your password..', 'autocomplete': 'new-password'}),
+        label="Confirm Password"
+    )
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'role']
+        fields = ['username', 'role', 'first_name', 'last_name', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'placeholder': 'Fill your user name..', 'autocomplete': 'new-username'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'Fill your first name'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Fill your last name'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Fill your email address'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Crispy Forms helper
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'row g-3'  # Bootstrap classes for spacing
+        self.helper.layout = Layout(
+            Row(
+                Column('username', css_class='col-md-6'),
+                Column('role', css_class='col-md-6'),
+            ),
+            Row(
+                Column('first_name', css_class='col-md-6'),
+                Column('last_name', css_class='col-md-6'),
+            ),
+            Row(
+                Column('email', css_class='col-md-12'),
+            ),
+            Row(
+                Column('password', css_class='col-md-6'),
+                Column('password2', css_class='col-md-6'),
+            ),
+            Submit('submit', 'Create User', css_class='btn btn-primary mt-2')
+        )
 
     def clean_password2(self):
         cd = self.cleaned_data
@@ -23,9 +69,27 @@ class CustomUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-    
-    
-    
+
+
+
+class CrispyAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'autocomplete': 'new-username', 'placeholder': 'Username'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder': 'Password'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('username', css_class='mb-3 col-md-6'),
+                Column('password', css_class='mb-3 col-md-6'),
+            ),
+        )
 
 
 
