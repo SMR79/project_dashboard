@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Users Report</h1>
+
+<div>
+    <table class="table table-bordered table-striped table-hover w-100 table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Role</th>
+                <th>Amount</th>                
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Admin</td><td>{{ stats.admin }}</td></tr>
+            <tr><td>Supervisor</td><td>{{ stats.supervisor }}</td></tr>
+            <tr><td>Staff</td><td>{{ stats.staff }}</td></tr>
+        </tbody>
+    </table>
+    <p>Total employees amount: <strong>{{ stats.total}}</strong></p>
+</div>
+
+
+{% endblock %}

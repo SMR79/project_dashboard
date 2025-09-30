@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">User Detail</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ detail_user.username }}</h5>
+            <table class="table table-bordered table-sm">
+                <tbody>
+                    <tr>
+                        <th scope="row">ID</th>
+                        <td>{{ detail_user.id }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Email</th>
+                        <td>{{ detail_user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Role</th>
+                        <td>{{ detail_user.role }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">First name</th>
+                        <td>{{ detail_user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last name</th>
+                        <td>{{ detail_user.last_name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-end">
+            <a href="{% url 'user_list' %}" class="btn btn-secondary btn-sm">← Back to User List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

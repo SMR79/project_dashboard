@@ -4,13 +4,12 @@ from crispy_forms.layout import Layout, Row, Column, Submit
 from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
 
-
-
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
 from .models import CustomUser
 
+# Form for creating a new user with Crispy Forms integration
 class CustomUserForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'placeholder': 'Fill your password..', 'autocomplete': 'new-password'}),
@@ -34,9 +33,17 @@ class CustomUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        print("Initializing CustomUserForm")  # <<< kontrola, jestli se form opravdu inicializuje
+        
         # Crispy Forms helper
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+
+        # jen jednoduché submit tlačítko pro test
+        self.helper.add_input(Submit('submit', 'Create User'))
+        print("CustomUserForm initialized")
+        
+        
         self.helper.form_class = 'row g-3'  # Bootstrap classes for spacing
         self.helper.layout = Layout(
             Row(
@@ -48,14 +55,22 @@ class CustomUserForm(forms.ModelForm):
                 Column('last_name', css_class='col-md-6'),
             ),
             Row(
-                Column('email', css_class='col-md-12'),
+                Column('email', css_class='col-md-6'),
             ),
             Row(
                 Column('password', css_class='col-md-6'),
                 Column('password2', css_class='col-md-6'),
             ),
-            Submit('submit', 'Create User', css_class='btn btn-primary mt-2')
+            # Submit('submit', 'Create User', css_class='btn btn-primary mt-3')
         )
+
+    def clean_role(self):
+        role = self.cleaned_data.get('role')
+        if role == "admin":
+            from .models import CustomUser
+            if CustomUser.objects.filter(role="admin").count() >= 4:
+                raise forms.ValidationError("Maximum number of admins (4) has been reached.")
+        return role
 
     def clean_password2(self):
         cd = self.cleaned_data
@@ -68,7 +83,7 @@ class CustomUserForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
-        return user
+        return user   
 
 
 

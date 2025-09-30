@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from .forms import CustomUserForm
 from .models import CustomUser
 from django.contrib.auth.decorators import login_required
@@ -17,7 +18,8 @@ def register(request):
         form = CustomUserForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("login")  
+            messages.success(request, "Účet byl úspěšně vytvořen, nyní se můžete přihlásit.")
+            return redirect("login")
     else:
         form = CustomUserForm()
     return render(request, "users/register.html", {"form": form})
@@ -50,4 +52,18 @@ def welcome(request):
     else:
         name = "Guest"
     return render(request, "users/welcome.html", {"name": name})
-    
+
+
+def get_user_detail(request, user_id):
+    detail_user = get_object_or_404(CustomUser, id=user_id)
+    return render(request, 'users/user_detail.html', {'detail_user': detail_user})
+
+def generate_user_report(request):
+    users = CustomUser.objects.all()
+    stats = {
+        "admin": CustomUser.objects.filter(role="admin").count(),
+        "supervisor": CustomUser.objects.filter(role="supervisor").count(),
+        "staff": CustomUser.objects.filter(role="staff").count(),   
+        "total": users.count(),
+    }
+    return render(request, 'users/user_report.html', {'stats': stats})

@@ -31,7 +31,7 @@ nav {
 nav a {
     color: white;
     text-decoration: none;
-    padding: 14px 20px;
+    padding: 0px 20px;
     font-size: 18px;    
     text-decoration: none;    
 }
@@ -41,7 +41,6 @@ nav a {
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 70px;
     text-wrap: nowrap;    
     min-width: 500px;
 }
@@ -58,17 +57,23 @@ nav a {
     
 }
 
-.dropdown-menu {
-    display: none;
+#nav-B {
+    gap: 1.5rem;
+    display: flex;
+    margin-left: 30px;
+    text-wrap: nowrap;
+}
+
+#nav-B svg {
+    color: gold;
+    vertical-align: middle;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;  
+    background-color: whitesmoke;
     position: absolute;
-    top: 100%;
-    left: 0;
-    background: #444444;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    min-width: 60px;
-    z-index: 1000;
+    width: 210px;
 }
 
 .dropdown-menu li a {
@@ -76,9 +81,12 @@ nav a {
     color: goldenrod;
 }
 
-.dropdown:hover .dropdown-menu {
-    display: block;
+.dropdown-menu li a:hover {
+    text-decoration: underline;
+    text-transform: uppercase;
 }
+
+
 
 
 @media (max-width: 600px) {

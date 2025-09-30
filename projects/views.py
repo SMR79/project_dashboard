@@ -35,5 +35,5 @@ def search_projects(request, id=None):
         "projects": projects,
     })
 
-def project_reports(request):
+def project_report(request):
     pass
