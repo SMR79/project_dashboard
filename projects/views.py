@@ -36,4 +36,10 @@ def search_projects(request, id=None):
     })
 
 def project_report(request):
-    pass
+    stats = {
+        'total_projects': Project.objects.count(),
+        'active_projects': Project.objects.filter(status='in_progress').count(),
+        'completed_projects': Project.objects.filter(status='completed').count(),
+        'planned_projects': Project.objects.filter(status='planned').count(),
+    }
+    return render(request, 'projects/project_report.html', {'stats': stats})

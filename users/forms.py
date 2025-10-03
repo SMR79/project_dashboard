@@ -4,10 +4,6 @@ from crispy_forms.layout import Layout, Row, Column, Submit
 from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
 
-from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit
-from .models import CustomUser
 
 # Form for creating a new user with Crispy Forms integration
 class CustomUserForm(forms.ModelForm):
@@ -33,16 +29,9 @@ class CustomUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        print("Initializing CustomUserForm")  # <<< kontrola, jestli se form opravdu inicializuje
-        
         # Crispy Forms helper
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-
-        # jen jednoduché submit tlačítko pro test
-        self.helper.add_input(Submit('submit', 'Create User'))
-        print("CustomUserForm initialized")
-        
         
         self.helper.form_class = 'row g-3'  # Bootstrap classes for spacing
         self.helper.layout = Layout(
@@ -61,7 +50,7 @@ class CustomUserForm(forms.ModelForm):
                 Column('password', css_class='col-md-6'),
                 Column('password2', css_class='col-md-6'),
             ),
-            # Submit('submit', 'Create User', css_class='btn btn-primary mt-3')
+            Submit('submit', 'Create User', css_class='btn btn-primary mt-3')
         )
 
     def clean_role(self):
@@ -86,7 +75,22 @@ class CustomUserForm(forms.ModelForm):
         return user   
 
 
+# Form for editing user details (excluding password)
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ["username", "role", "email", "first_name", "last_name"]
+    
+    def __init__(self, *args, **kwargs):
+        current_user = kwargs.pop("current_user", None)
+        super().__init__(*args, **kwargs)
 
+        # Disable role field if the current user is not an admin
+        if not (current_user and getattr(current_user, "role", None) == "admin"):
+            self.fields["role"].disabled = True
+
+
+# Custom Authentication Form with Crispy Forms integration
 class CrispyAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={'autocomplete': 'new-username', 'placeholder': 'Username'})
@@ -104,6 +108,7 @@ class CrispyAuthenticationForm(AuthenticationForm):
                 Column('username', css_class='mb-3 col-md-6'),
                 Column('password', css_class='mb-3 col-md-6'),
             ),
+            Submit('submit', 'Login', css_class='btn btn-primary mt-3')
         )
 
 

@@ -32,7 +32,9 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer text-end">
+        <div class="card-footer">
+            <a href="{% url 'edit_user' detail_user.id %}" class="btn btn-primary btn-sm">Edit user details</a>    
+            <a href="" class="btn btn-danger btn-sm">Reset password</a>    
             <a href="{% url 'user_list' %}" class="btn btn-secondary btn-sm">← Back to User List</a>
         </div>
     </div>

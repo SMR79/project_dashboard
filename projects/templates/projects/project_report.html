@@ -1,7 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 <div>
-    <h2>Project Reports</h2>
+    <h2>Projects Report</h2>
+    <br>
+    <div>
+    <table class="table table-bordered table-striped table-hover w-100 table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Status</th>
+                <th>Amount</th>                
+            </tr>
+        </thead>
+        <tbody>            
+            <tr><td>Planned</td><td>{{ stats.planned_projects }}</td></tr>
+            <tr><td>In Progress</td><td>{{ stats.active_projects }}</td></tr>
+            <tr><td>Completed</td><td>{{ stats.completed_projects }}</td></tr>   
+                                 
+        </tbody>        
+    </table>
+    <p>Total projects: <strong>{{stats.total_projects}}</strong></p>
+</div>
 
 </div>
 {% endblock %}
+
