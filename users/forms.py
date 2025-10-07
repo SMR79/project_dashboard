@@ -1,6 +1,7 @@
 from django import forms
+from django.urls import reverse
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit
+from crispy_forms.layout import Layout, Row, Column, Submit, HTML
 from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -80,12 +81,34 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ["username", "role", "email", "first_name", "last_name"]
-    
+
     def __init__(self, *args, **kwargs):
-        current_user = kwargs.pop("current_user", None)
+        # vyjmu custom parametry
+        current_user = kwargs.pop("current_user", None)        
+        
+        # zavolám init ModelForm
         super().__init__(*args, **kwargs)
 
-        # Disable role field if the current user is not an admin
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'row g-3'
+        self.helper.layout = Layout(
+            Row(
+                Column('username', css_class='col-md-6'),
+                Column('role', css_class='col-md-6'),
+            ),
+            Row(
+                Column('first_name', css_class='col-md-6'),
+                Column('last_name', css_class='col-md-6'),
+            ),
+            Row(
+                Column('email', css_class='col-md-6'),
+            ),
+            Submit('submit', 'Update User', css_class='btn btn-primary mt-3'),    
+            HTML(f'<a href="{reverse("user_detail", args=[self.instance.id])}" class="btn btn-secondary mt-3">Cancel</a>')        
+        )
+
+        # Disable role field if current user is not admin
         if not (current_user and getattr(current_user, "role", None) == "admin"):
             self.fields["role"].disabled = True
 

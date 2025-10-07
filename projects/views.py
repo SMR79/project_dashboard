@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Project
-from .forms import ProjectForm
+from .forms import ProjectForm, EditProjectForm
 
 
 def get_project_detail(request, project_id):
@@ -43,3 +43,21 @@ def project_report(request):
         'planned_projects': Project.objects.filter(status='planned').count(),
     }
     return render(request, 'projects/project_report.html', {'stats': stats})
+
+def edit_project(request, project_id):
+    project = Project.objects.get(id=project_id)
+    if request.method == 'POST':
+        form = EditProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = EditProjectForm(instance=project)
+    return render(request, 'projects/edit_project.html', {'form': form, 'edit_project': project})
+
+def delete_project(request, project_id):
+    project = Project.objects.get(id=project_id)
+    if request.method == 'POST':
+        project.delete()
+        return redirect('project_search')
+    return render(request, 'projects/confirm_delete.html', {'project': project})

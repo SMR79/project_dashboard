@@ -1,0 +1,59 @@
+<div id="userTableContainerInner">
+<table class="table table-bordered table-striped table-hover w-100 table-sm">
+    <thead class="table-dark">
+        <tr><th colspan="4">User List</th></tr>
+        <tr>
+            <th>#ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in page_obj %}
+        <tr class="role-{{ user.role|lower }}">
+            <td><a href="{% url 'user_detail' user.id %}">{{ user.id }}</a></td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No users found.</td></tr>
+        {% endfor %}
+        <tr id="noFilterMessage" style="display:none;">
+            <td colspan="4" class="text-center text-muted">
+                To display users, apply filters above the table.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Paginace -->
+<nav_pagination aria-label="Page navigation example">
+<ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link page-link-ajax" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link page-link-ajax" href="?page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link page-link-ajax" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+</ul>
+</nav_pagination>
+</div>

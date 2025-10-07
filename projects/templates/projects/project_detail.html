@@ -37,5 +37,39 @@
     </tbody>
 </table>
 
-<a href="{% url 'project_search' %}">Back to Project List</a>
+        <div class="card-footer" style="background-color: #94b3d393;">
+            <a href="{% url 'edit_project' project.id %}" class="btn btn-primary btn-sm">Edit project details</a>
+
+        
+        <!-- Tlačítko Delete project -->
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            Delete project
+        </button>
+
+        <!-- Modal 1: Confirm delete -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Do you really want to delete the project "{{ project.name }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <!-- After confirm will close this modal and open the next one -->
+                        <form method="post" action="{% url 'delete_project' project.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Back button -->
+        <a href="{% url 'project_search' %}" class="btn btn-secondary btn-sm">← Back</a>
+
 {% endblock %}

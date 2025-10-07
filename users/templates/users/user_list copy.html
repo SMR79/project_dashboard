@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    
+    <div class="filter">
+        <div class="input-group mb-3" style="flex-wrap: nowrap; ">
+            <input type="text" class="form-control" placeholder="Search username..." aria-label="Search" style="font-size: 0.9rem;">
+            <button class="btn btn-outline-secondary" type="button">Search</button>
+        </div>
+        <div id="filter_admin" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="switchAdmin" checked>
+            <label class="form-check-label" for="switchCheckDefault">Admin</label>        
+        </div>
+        <div id="filter_supervisor" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="switchSupervisor" checked>
+            <label class="form-check-label" for="switchCheckDefault">Supervisor</label>        
+        </div>
+        <div id="filter_staff" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="switchStaff" checked>
+            <label class="form-check-label" for="switchCheckDefault">Staff</label>
+        </div>
+    </div>
+
+    
+    <div id="userTableContainer">
+        {% include "users/user_list_table.html" %}
+    </div>
+
+</div>
+
+<!-- JavaScript pro AJAX stránkování -->
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    function applyFilters() {
+        const filters = {
+            switchAdmin: "role-admin",
+            switchSupervisor: "role-supervisor",
+            switchStaff: "role-staff"
+        };
+        
+        let anyChecked = false;
+
+        for (const [checkboxId, roleClass] of Object.entries(filters)) {
+            const isChecked = document.getElementById(checkboxId).checked;
+            anyChecked = anyChecked || isChecked;
+
+            document.querySelectorAll("#userTableContainer ." + roleClass).forEach(row => {
+                row.style.display = isChecked ? "" : "none";
+            });
+        }
+
+        const noFilterMsg = document.getElementById("noFilterMessage");
+        if (noFilterMsg) {
+            noFilterMsg.style.display = anyChecked ? "none" : "";
+        }
+    }
+
+    // Přidání listenerů na check-boxy
+    document.querySelectorAll(".form-check-input").forEach(cb => {
+        cb.addEventListener("change", applyFilters);
+    });
+
+    // AJAX stránkování
+    function loadPage(url) {
+        fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newContent = doc.querySelector("#userTableContainerInner");
+            document.querySelector("#userTableContainer").innerHTML = newContent.innerHTML;
+
+            attachAjaxLinks();
+            applyFilters(); // znovu filtr na nové řádky
+        });
+    }
+
+    function attachAjaxLinks() {
+        document.querySelectorAll(".page-link-ajax").forEach(link => {
+            link.addEventListener("click", function(e) {
+                e.preventDefault();
+                loadPage(this.href);
+            });
+        });
+    }
+
+    attachAjaxLinks();
+    applyFilters();
+
+    // Volitelné: Search podle username
+    document.getElementById("btnSearch").addEventListener("click", () => {
+        const query = document.getElementById("searchUsername").value;
+        loadPage(`?search=${encodeURIComponent(query)}`);
+    });
+
+});
+</script>
+
+{% endblock %}

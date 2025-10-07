@@ -104,8 +104,18 @@ nav a {
     text-transform: uppercase;
 }
 
+.filter {
+    width: 100%;
+    display: flex;
+    justify-content:left;
+    align-items: baseline;
+    gap: 20px;    
+}
 
-
+.card-footer {
+    display: flex;
+    justify-content:space-between;     
+}
 
 @media (max-width: 600px) {
     body {

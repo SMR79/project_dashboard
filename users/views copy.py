@@ -1,88 +1,34 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.urls import reverse
 from .forms import CustomUserForm
 from .models import CustomUser
+from django.contrib.auth.decorators import login_required
 from .forms import CrispyAuthenticationForm, UserEditForm
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
-from django.db.models import Q
 
 # create user list view
 def get_user_list(request):
-    qs = CustomUser.objects.all().order_by('id')
-    show_message = False
-
-    # --- role filter ---
-    admin_checked = request.GET.get('admin', '')
-    supervisor_checked = request.GET.get('supervisor', '')
-    staff_checked = request.GET.get('staff', '')
-
-    # první načtení – žádné parametry v URL
-    no_params = not any(param in request.GET for param in ['admin', 'supervisor', 'staff'])
-    if no_params:
-        admin_checked = supervisor_checked = staff_checked = '1'
-
-    roles = []
-    if admin_checked == '1':
-        roles.append('admin')
-    if supervisor_checked == '1':
-        roles.append('supervisor')
-    if staff_checked == '1':
-        roles.append('staff')
-
-    if roles:
-        qs = qs.filter(role__in=roles)
-
-    # --- search ---
-    search_username = request.GET.get('search_username', '').strip()
-    if search_username:
-        qs = qs.filter(username__icontains=search_username)
-
-    search = request.GET.get('search', '').strip()
-    if search:
-        qs = qs.filter(
-            Q(username__icontains=search) |
-            Q(email__icontains=search) |
-            Q(first_name__icontains=search) |
-            Q(last_name__icontains=search)
-        )
-
-    if not roles and not search:
-        qs = CustomUser.objects.none()
-        messages.info(request, "No roles selected, no users to display.")
-        show_message = True
-
-    paginator = Paginator(qs, 15)
+    users = CustomUser.objects.all()
+    # Apply filters if any
+    search_query = request.GET.get('search', '')
+    if search_query:
+        users = users.filter(username__icontains=search_query)  # Example filter
+        
+    paginator = Paginator(users, 15)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # querystring bez page
-    params = request.GET.copy()
-    if 'page' in params:
-        params.pop('page')
-    querystring = params.urlencode()
-
-    context = {
-        'page_obj': page_obj,
-        'querystring': querystring,
-        'search': search,
-        'admin_checked': admin_checked == '1',
-        'supervisor_checked': supervisor_checked == '1',
-        'staff_checked': staff_checked == '1',
-        'search_username': search_username,
-        'show_message': show_message,
-        'total_users': qs.count(),
-    }
-
+    # if the request is AJAX, return only the table part
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'users/user_list_table.html', context)
+        return render(request, 'users/user_list_table.html', {'page_obj': page_obj})
 
-    return render(request, 'users/user_list.html', context)
+    return render(request, 'users/user_list.html', {'page_obj': page_obj})
 
 
 def register(request):
-    messages.info(request, "To create a new user, please fill out the form above.")
     if request.method == "POST":
         form = CustomUserForm(request.POST)
         if form.is_valid():
@@ -162,7 +108,7 @@ def edit_user(request, user_id):
             current_user=request.user,        
         )
 
-    return render(request, 'users/edit_user.html', {'form': form, 'edit_user': user, 'last_message' : messages.get_messages(request)})
+    return render(request, 'users/edit_user.html', {'form': form, 'edit_user': user})
 
 def generate_user_report(request):
     users = CustomUser.objects.all()

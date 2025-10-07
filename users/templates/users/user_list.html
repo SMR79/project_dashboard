@@ -1,28 +1,106 @@
 {% extends "base.html" %}
 {% block content %}
 <div>
-    <h2>User List</h2>
-    <table class="table table-bordered table-striped table-hover w-100 table-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>#ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td><a href="{% url 'user_detail' user.id %}">{{ user.id }}</a></td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4">No users found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <div class="filter mb-3">
+        <div class="input-group mb-3" style="flex-wrap: nowrap;">
+            <input type="text" class="form-control" placeholder="Search name or username..." id="searchUsername" style="font-size:0.9rem;" value="{{ search }}">
+            <button class="btn btn-outline-secondary" type="button" id="btnSearch">Search</button>
+        </div>
+
+        <div id="filter_admin" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="switchAdmin" name="admin">
+            <label class="form-check-label">Admin</label>
+        </div>
+        <div id="filter_supervisor" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="switchSupervisor" name="supervisor">
+            <label class="form-check-label">Supervisor</label>
+        </div>
+        <div id="filter_staff" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="switchStaff" name="staff">
+            <label class="form-check-label">Staff</label>
+        </div>
+    </div>
+
+    <!-- sem se bude AJAX vložit -->
+    <div id="userTableContainer">
+        {% include "users/user_list_table.html" %}
+    </div>
+
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  
+    // sestaví URL params podle aktuálních filtrů a search
+    function buildParams(page=null) {
+        const params = new URLSearchParams();
+        const search = document.getElementById('searchUsername').value.trim();
+        if (search) params.append('search', search);
+        if (document.getElementById('switchAdmin').checked) params.append('admin', '1');
+        if (document.getElementById('switchSupervisor').checked) params.append('supervisor', '1');
+        if (document.getElementById('switchStaff').checked) params.append('staff', '1');
+        if (page) params.append('page', page);
+        return params.toString();
+    }
+
+    // načte obsah do kontejneru (#userTableContainer)
+    function loadPage(url) {
+        fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newContent = doc.querySelector("#userTableContainerInner");
+            if (!newContent) return;
+            document.querySelector("#userTableContainer").innerHTML = newContent.innerHTML;
+
+            attachAjaxLinks(); // znovu připoj odkazy
+            // update adresního řádku (volitelné)
+            if (url.startsWith("?") || url.startsWith(window.location.pathname)) {
+            history.pushState({}, "", url.startsWith("?") ? window.location.pathname + url : url);
+            }
+        })
+        .catch(err => console.error("AJAX load failed:", err));
+    }
+
+    // když se změní filtry/search -> načti page 1 s těmito filtry
+    function submitFilters() {
+        const qs = buildParams(); // bez page => => page 1 implicitně
+        const url = qs ? "?" + qs : window.location.pathname;
+        loadPage(url);
+    }
+
+    // připojí handlery na AJAX paginaci (odkazy mají class page-link-ajax)
+    function attachAjaxLinks() {
+        document.querySelectorAll(".page-link-ajax").forEach(link => {
+        // odstraň existující posluchač před přidáním (bez duplicit)
+        link.replaceWith(link.cloneNode(true));
+        });
+        // znovu deleguj
+        document.querySelectorAll(".page-link-ajax").forEach(link => {
+        link.addEventListener("click", function(e) {
+            e.preventDefault();
+            // href může být "?page=N&..." nebo celé URL; použij href přímo
+            let href = this.getAttribute('href');
+            // pokud href neobsahuje path, přidej aktuální path
+            if (href && href.startsWith('?')) href = window.location.pathname + href;
+            loadPage(href);
+        });
+        });
+    }
+
+    // eventy: checkboxy a search button / enter
+    document.querySelectorAll(".form-check-input").forEach(cb => {
+        cb.addEventListener("change", () => submitFilters());
+    });
+    document.getElementById("btnSearch").addEventListener("click", submitFilters);
+    document.getElementById("searchUsername").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); submitFilters(); }
+    });
+
+    attachAjaxLinks(); // inicializace
+});
+</script>
+
 {% endblock %}

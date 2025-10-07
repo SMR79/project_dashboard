@@ -32,11 +32,99 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            <a href="{% url 'edit_user' detail_user.id %}" class="btn btn-primary btn-sm">Edit user details</a>    
-            <a href="" class="btn btn-danger btn-sm">Reset password</a>    
-            <a href="{% url 'user_list' %}" class="btn btn-secondary btn-sm">← Back to User List</a>
+
+        <div class="card-footer" style="background-color: #94b3d393;">
+            <a href="{% url 'edit_user' detail_user.id %}" class="btn btn-primary btn-sm">Edit user details</a>
+
+        <!-- Reset password tlačítko -->
+        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#confirmResetModal">
+            Reset password
+        </button>
+
+        <!-- Modal 1: Confirm reset -->
+        <div class="modal fade" id="confirmResetModal" tabindex="-1" aria-labelledby="confirmResetModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Reset</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Do you really want to reset the password for "{{ detail_user.username }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <!-- After confirm will close this modal and open the next one -->
+                        <button type="button" class="btn btn-warning"
+                                data-bs-dismiss="modal"
+                                data-bs-toggle="modal"
+                                data-bs-target="#setNewPasswordModal">
+                        Yes, reset
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Modal 2: Set new password -->
+        <div class="modal fade" id="setNewPasswordModal" tabindex="-1" aria-labelledby="setNewPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" action="{% url 'reset_user_password' detail_user.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Set New Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="password1" class="form-label">New password</label>
+                            <input type="password" class="form-control" id="password1" name="password1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password2" class="form-label">Confirm password</label>
+                            <input type="password" class="form-control" id="password2" name="password2" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Save</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>     
+            
+        <!-- Tlačítko Delete user -->
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            Delete user
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete user "{{ detail_user.username }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form method="post" action="{% url 'delete_user' detail_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="{{ back_url }}" class="btn btn-secondary btn-sm">← Back</a>
+
     </div>
 </div>
+
 {% endblock %}
